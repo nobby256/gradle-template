@@ -1,0 +1,2 @@
+# gradle-template
+GradleによるSpringBootのマルチプロジェクトのひな形
