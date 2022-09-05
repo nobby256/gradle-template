@@ -1,0 +1,178 @@
+
+plugins {
+	// ルートプロジェクト用のプラグイン
+	id 'base'
+	id 'distribution'
+	id 'org.owasp.dependencycheck'
+	
+	// サブプロジェクト用のプラグイン
+	id 'com.github.spotbugs' apply false
+	id 'com.google.cloud.tools.jib' apply false
+	id 'com.github.hierynomus.license-report' apply false
+}
+
+group = 'com.example'
+version = '0.0.1'
+
+ext {
+	configDir = "${rootDir}/config" 
+}
+
+// ============================================================
+//
+//
+// https://docs.gradle.org/current/userguide/distribution_plugin.html
+// ============================================================
+distributions {
+	main {
+		contents {
+			subprojects.each { subprject ->
+				from (subprject.name + '/build/libs') {
+					include '*.jar'
+					exclude '*-plain.jar'
+				}
+				into ('license') {
+					from (subprject.name + '/build/reports/license') {
+						include '*.html'
+						rename '(.+)(\\.html)', '$1_' + subprject.name + '$2'
+					}
+				}
+			}
+		}
+	}
+}
+
+dependencyCheck {
+	failOnError = false
+	formats = ['HTML', 'XML', 'JUNIT'] // ローカル用にHTML、jenkins用にXML, codebuild用にJUNIT
+	scanConfigurations = ['productionRuntimeClasspath']
+	outputDirectory = file("${buildDir}/reports/owasp") // レポート出力フォルダ
+
+	// 誤検出を抑制（https://jeremylong.github.io/DependencyCheck/general/suppression.html）
+	suppressionFile = "${configDir}/owasp/dependency-check-suppressions.xml"
+	// 誤陽性を抑制（https://jeremylong.github.io/DependencyCheck/general/hints.html）
+	hintsFile = "${configDir}/owasp/dependency-check-hints.xml"
+
+	// junit形式のレポートにおいてNGと判定するCVSSの閾値を指定します。
+	// 深刻度レベルは下記を参考にしてください。
+	//   緊急：10.0～9.0、重要：8.9～7.0、警告：6.9～4.0、注意：3.9～0.1、なし：0.0
+	// https://www.ipa.go.jp/security/vuln/CVSSv3.html
+	// https://www.ipa.go.jp/security/vuln/SeverityLevel2.html
+	junitFailOnCVSS = 7.0
+}
+
+subprojects {
+	apply plugin: 'java'
+	group = rootProject.group
+	version = rootProject.version
+	sourceCompatibility = '11'
+
+	java {
+		withSourcesJar()
+		withJavadocJar()
+	}
+	test {
+		useJUnitPlatform()
+
+		ignoreFailures = true
+		finalizedBy 'jacocoTestReport'
+
+		reports {
+			// htmlの出力は不要（ローカルはeclipse、CIはcodebuild/jenkinsで確認）
+			html.required = false
+			junitXml {
+				outputPerTestCase = true
+				// mergeReturns = true
+			}
+		}
+	}
+	javadoc {
+		options.locale = 'ja_JP'
+		options.encoding = 'UTF-8'
+	}
+
+	apply plugin: 'maven-publish'
+	publishing {
+		publications {
+			mavenJava (MavenPublication) {
+				from components.java
+//				if (project.tasks.getByName('dependencyManagement')) {
+					// io.spring.dependency-managementプラグインを有効にしているプロジェクトには必要
+					versionMapping {
+						allVariants {
+							fromResolutionResult()
+						}
+					}
+//				}
+			}
+		}
+		repositories {
+			maven {
+				name = 'myRepo'
+				url = rootProject.layout.buildDirectory.dir('myRepo')
+			}
+		}
+	}
+	//tasks.publish.enabled = false
+	//tasks.publishMavenJavaPublicationToMyRepoRepository.enabled = false
+	//tasks.generateMetadataFileForMavenJavaPublication.enabled = false
+	//tasks.generatePomFileForMavenJavaPublication.enabled = false
+	
+	apply plugin: 'jacoco'
+	jacocoTestReport {
+		dependsOn 'test'
+		reports {
+			// htmlの出力は不要（ローカルはeclipse、CIはcodebuild/jenkinsで確認）
+			html.required = false
+			xml.required = true
+		}
+	}
+
+	apply plugin: 'checkstyle'
+	checkstyle {
+		// eclipse 2022-06 (4.24.0)と同じバージョンに固定します
+		toolVersion = '10.0'
+		ignoreFailures = true
+		checkstyleTest.enabled = false
+	}
+
+	apply plugin: 'com.github.spotbugs'
+	spotbugs {
+		// eclipse 2022-06 (4.24.0)と同じバージョンに固定します
+		toolVersion = '4.7.0'
+		ignoreFailures = true
+		spotbugsTest.enabled = false
+		showProgress = false
+		excludeFilter = file("${configDir}/spotbugs/exclude_filter.xml")
+	}
+	
+	apply plugin: 'com.github.hierynomus.license-report'
+	downloadLicenses {
+		includeProjectDependencies = true
+		dependencyConfiguration = 'productionRuntimeClasspath'
+	}
+/*
+	apply plugin: 'jib'
+	jib {
+		def appName = project.name
+		
+		if (project.ext.has('IMAGE_REPO_BASE_URL')) {
+			to.image = "${IMAGE_REPO_BASE_URL}/${appName}"
+		}
+
+		// from.image =
+		configurationName = 'productionRuntimeClasspath'
+
+		container {
+			jvmFlags = [
+						 '-Duser.language=jp'
+						,'-Duser.country=JP'
+						,'-Duser.timezone=Asia/Tokyo'
+						,'-Dfile.encoding=UTF-8'
+						,'-Dspring.cloud.inetutils.useOnlySiteLocalInterfaces=true'
+						]
+		}
+	}
+*/
+}
+task hello

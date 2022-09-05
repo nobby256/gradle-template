@@ -1,0 +1,88 @@
+// ============================================================
+// 全プロジェクトで利用するプラグインバージョンの宣言
+//
+// https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_management
+// ============================================================
+pluginManagement {
+	plugins {
+		id 'org.springframework.boot' version '2.7.3'
+		id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+		id 'org.owasp.dependencycheck' version '7.1.2'
+		id 'com.github.spotbugs' version '5.0.11'
+		id 'com.google.cloud.tools.jib' version '3.2.1'
+
+//      license-reportの問題に対処する為にバージョン指定ではなくbuildscriptでロードまで行っている
+//		id "com.github.hierynomus.license-report" version"0.16.1"
+	}
+// 複数の系統のSpring Bootに対応
+//	resolutionStrategy {
+//		eachPlugin {
+//			if (requested.id.namespace == 'com.example') {
+//				useModule('com.example:sample-plugins:1.0.0')
+//			}
+//		}
+//	}
+}
+
+// ============================================================
+// license-gradle-pluginの問題への対処
+//
+// 背景：
+// このプラグインは内部で古いlicense-maven-plugin(ver3.0)に依存している。
+// そして、このバージョンのmaven版プラグインはspring-coreに依存している。
+// この状態では条件によってspring bootのプラグインと干渉しbuildが失敗してしまう。
+// 
+// 対処策：
+// license-gradle-pluginが依存しているlicense-maven-pluginをバージョンを上げる
+//
+// 選択しなかった対処策：
+// ・license-gradle-pluginが依存しているlicense-maven-pluginのバージョンを上げる
+//   メンテナンスが停止しているので望み薄
+//   フォークプロジェクトを作成する（不採用）
+// ・spring bootプラグインと同じplugins内でロードする
+//  例： plugins {
+//	        id 'org.springframework.boot' apply false
+//	        id 'io.spring.dependency-management' apply false
+//	        id 'com.github.hierynomus.license-report' apply false
+//       }
+//    同一のpluginsでロードすると、spring boot系のプラグインとlicense-reportプラグインで
+//    spring-coreを同時にロードすることになる。
+//    結果としてgradleはより高いバージョンのspring-coreを選択する事で結果オーライとなる。
+//    解決策としてはこちらがシンプルではあるが、弊害としてこの問題の存在をもみ消してしまう
+//
+// ============================================================
+buildscript {
+	repositories {
+		maven {
+		  url "https://plugins.gradle.org/m2/"
+		}
+	}
+	dependencies {
+		classpath "gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.16.1"
+		constraints {
+			// バージョンの差し替え（3.0→4.1）4.1は2022/9/1時点での最新
+			classpath 'com.mycila:license-maven-plugin:4.1'
+		}
+	}
+}
+
+// ============================================================
+// 全プロジェクトで暗黙に有効となるリポジトリを指定します（allprojectsの代替え）
+// ただしプラグインのリポジトリは対象外です
+//
+// https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:centralized-repository-declaration
+// ============================================================
+dependencyResolutionManagement {
+	repositories {
+		mavenCentral()
+	}
+	// プロジェクトでのリポジトリのオーバーライドは不許可
+	repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+}
+
+// ============================================================
+// ============================================================
+rootProject.name = 'gradle-template'
+
+include 'subapp'
+include 'sublibrary'
