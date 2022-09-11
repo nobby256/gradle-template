@@ -1,0 +1,17 @@
+// ============================================================
+// ルートプロジェクト（マルチプロジェクト構成用）の規約プラグイン
+//
+// build.gradleの先頭に下記を記載してください。
+//
+//   apply from: "${rootDir}/convention/multi-root.gradle
+// ============================================================
+apply plugin: 'convention.project.multi-root'
+
+ext {
+	configDir = "${rootDir}/config"
+
+	// publishを行うライブラリプロジェックとの公開先
+	// URLもしくはローカルフォルダを指定してください。
+	// プロパティをコメントアウト、もしくはnullを設定した場合はpublishは行われません。
+	deploymentRepository = layout.buildDirectory.dir('deployment')
+}

@@ -1,14 +1,7 @@
-plugins {
-	id 'convention.project.multi-root'
-}
+apply from: "${rootDir}/convention/multi-root.gradle"
 
 group = 'com.example'
 version = '0.0.1'
-
-ext {
-	configDir = "${rootDir}/config"
-	deploymentRepository = layout.buildDirectory.dir('deployment')
-}
 
 subprojects {
 	group = rootProject.group

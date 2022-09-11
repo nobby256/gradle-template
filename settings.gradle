@@ -1,26 +1,31 @@
 // ============================================================
-// 全プロジェクトで利用するプラグインバージョンの宣言
+// 全プロジェクトで利用するプラグインバージョン
+//
+// Gradleがスクリプトプラグインでのplugins{}をサポートするまで
+// Spring Boot関連のプラグインはbuildscript{}で対応します。
 //
 // https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_management
 // ============================================================
 pluginManagement {
-	plugins {
-		id 'org.springframework.boot' version springBootVersion
-		id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+	repositories {
+		gradlePluginPortal()
 	}
-	
-// 複数の系統のSpring Bootに対応
-//	resolutionStrategy {
-//		eachPlugin {
-//			if (requested.id.namespace == 'com.example') {
-//				useModule('com.example:sample-plugins:1.0.0')
-//			}
-//		}
-//	}
+	plugins {
+
+	}
+}
+buildscript {
+	repositories {
+		gradlePluginPortal()
+	}
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+		classpath "io.spring.gradle:dependency-management-plugin:1.0.13.RELEASE"
+	}
 }
 
 // ============================================================
-// 全プロジェクトで暗黙に有効となるリポジトリの指定
+// 全プロジェクトで有効となるリポジトリの指定
 // ただしプラグインのリポジトリは対象外です
 //
 // https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:centralized-repository-declaration
@@ -30,7 +35,7 @@ dependencyResolutionManagement {
 		mavenCentral()
 	}
 	// プロジェクトでのリポジトリのオーバーライドは不許可
-	//repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+	// repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
 
 // ============================================================

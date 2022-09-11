@@ -1,0 +1,16 @@
+// ============================================================
+// Spring Bootアプリケーションの規約プラグイン
+//
+// build.gradleの先頭に下記を記載してください。
+//
+//   apply from: "${rootDir}/convention/boot-application.gradle
+// ============================================================
+apply from: "${rootDir}/convention/java-application.gradle"
+apply from: "${rootDir}/convention/boot-common.gradle"
+apply plugin: 'org.springframework.boot'
+
+springBoot {
+	// actuator経由でアプリケーションのビルド情報が取得できるようになります
+	// https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/htmlsingle/#integrating-with-actuator
+	buildInfo()
+}

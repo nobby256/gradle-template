@@ -1,0 +1,24 @@
+// ============================================================
+// Spring Bootアプリケーション・ライブラリから共有されるビルドスクリプト
+//
+// Spring Bootプロジェクト共通の設定を行います。
+// ============================================================
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+
+// Lombokを使用する場合、Spring Initializerが出力するconfiguration
+// Lombokを使用しないプロジェクトであっても特に問題はありません。
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+// Spring Bootで提供される依存関係設定
+// https://docs.spring.io/dependency-management-plugin/docs/current-SNAPSHOT/reference/html/
+dependencyManagement {
+	imports {
+		mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
