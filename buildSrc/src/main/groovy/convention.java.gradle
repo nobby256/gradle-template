@@ -64,3 +64,32 @@ spotbugs {
 	showProgress = false
 	excludeFilter = file("${PropertyUtil.configDir(project)}/spotbugs/exclude_filter.xml")
 }
+spotbugsMain {
+	reports {
+		xml {
+			required = true
+		}
+		html {
+			required = true
+			stylesheet = 'fancy-hist.xsl'
+		}
+	}
+}
+// dependency-managementプラグイン適用後にspotbugsSlf4j内のslf4jのバージョンを元に戻す
+// 下記の例はcom.github.spotbugs.snom:spotbugs-gradle-plugin:5.0.12の場合なので、
+// spotbugsプラグインのバージョンを変更する場合は適切に修正する事
+//
+// spotbugsSlf4j - configuration for the SLF4J provider to run SpotBugs
+// \--- org.slf4j:slf4j-simple:2.0.0
+//      \--- org.slf4j:slf4j-api:2.0.0 -> 1.7.36
+// ↓
+// spotbugsSlf4j - configuration for the SLF4J provider to run SpotBugs
+// +--- org.slf4j:slf4j-simple:2.0.0
+// |    \--- org.slf4j:slf4j-api:2.0.0
+// \--- org.slf4j:slf4j-api:2.0.0
+pluginManager.withPlugin('io.spring.dependency-management') {
+	project.dependencies {
+		spotbugsSlf4j 'org.slf4j:slf4j-simple:2.0.0'
+		spotbugsSlf4j 'org.slf4j:slf4j-api:2.0.0'
+	}
+}
