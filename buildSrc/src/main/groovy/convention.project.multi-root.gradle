@@ -1,0 +1,51 @@
+import internal.PropertyUtil
+
+plugins {
+	id 'base'
+	id 'distribution'
+	id 'org.owasp.dependencycheck'
+}
+
+dependencyCheck {
+	failOnError = false
+	formats = ['HTML', 'XML', 'JUNIT'] // ローカル用にHTML、jenkins用にXML, codebuild用にJUNIT
+	scanConfigurations = ['runtimeClasspath']
+	outputDirectory = file("${buildDir}/reports/owasp") // レポート出力フォルダ
+
+	def configDir = rootProject.ext.configDir
+	// 誤検出を抑制（https://jeremylong.github.io/DependencyCheck/general/suppression.html）
+	suppressionFile = "${PropertyUtil.configDir(project)}/owasp/dependency-check-suppressions.xml"
+	// 誤陽性を抑制（https://jeremylong.github.io/DependencyCheck/general/hints.html）
+	hintsFile = "${PropertyUtil.configDir(project)}/owasp/dependency-check-hints.xml"
+
+	// junit形式のレポートにおいてNGと判定するCVSSの閾値を指定します。
+	// 深刻度レベルは下記を参考にしてください。
+	//   緊急：10.0～9.0、重要：8.9～7.0、警告：6.9～4.0、注意：3.9～0.1、なし：0.0
+	// https://www.ipa.go.jp/security/vuln/CVSSv3.html
+	// https://www.ipa.go.jp/security/vuln/SeverityLevel2.html
+	junitFailOnCVSS = 7.0
+}
+
+// ============================================================
+//
+//
+// https://docs.gradle.org/current/userguide/distribution_plugin.html
+// ============================================================
+distributions {
+	main {
+		contents {
+			subprojects.each { subprject ->
+				from (subprject.name + '/build/libs') {
+					include '*.jar'
+					exclude '*-plain.jar'
+				}
+				into ('license') {
+					from (subprject.name + '/build/reports/license') {
+						include '*.html'
+						rename '(.+)(\\.html)', '$1_' + subprject.name + '$2'
+					}
+				}
+			}
+		}
+	}
+}

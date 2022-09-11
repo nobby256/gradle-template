@@ -1,0 +1,43 @@
+import internal.PropertyUtil
+
+plugins {
+	id 'convention.java'
+
+	id 'java-library'
+	id 'maven-publish'
+	id 'com.github.hierynomus.license-report'
+}
+
+publishing {
+	publications {
+		mavenJava (MavenPublication) { mavenPub ->
+			mavenPub.from components.java
+
+			// dependency-managementプラグイン適用時には下記も追加
+			pluginManager.withPlugin('io.spring.dependency-management') {
+				mavenPub.versionMapping {
+					allVariants {
+						fromResolutionResult()
+					}
+				}
+			}
+		}
+	}
+	def repoUrl = PropertyUtil.deploymentRepository(project)
+	if (repoUrl != null) {
+		repositories {
+			maven {
+				name = 'deployment'
+				url = repoUrl
+			}
+		}
+	}
+}
+
+downloadLicenses {
+	includeProjectDependencies = true
+	dependencyConfiguration = 'runtimeClasspath'
+}
+project.tasks.named('assemble') {
+	dependsOn 'downloadLicenses'
+}

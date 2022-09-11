@@ -1,0 +1,48 @@
+plugins {
+	id 'groovy-gradle-plugin'
+}
+
+repositories {
+	gradlePluginPortal()
+}
+
+dependencies {
+//	implementation "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+//	implementation 'io.spring.gradle:dependency-management-plugin:1.0.13.RELEASE'
+	implementation 'org.owasp:dependency-check-gradle:7.1.2'
+	implementation 'com.github.spotbugs.snom:spotbugs-gradle-plugin:5.0.12'
+	implementation 'com.google.cloud.tools:jib-gradle-plugin:3.3.0'
+
+	// ============================================================
+	// license-gradle-pluginの問題への対処
+	//
+	// 背景：
+	// このプラグインは内部で古いlicense-maven-plugin(ver3.0)に依存している。
+	// そして、このバージョンのmaven版プラグインはspring-coreに依存している。
+	// この状態では条件によってspring bootのプラグインと干渉しbuildが失敗してしまう。
+	// 
+	// 対処策：
+	// license-gradle-pluginが依存しているlicense-maven-pluginをバージョンを上げる
+	//
+	// 選択しなかった対処策：
+	// ・license-gradle-pluginが依存しているlicense-maven-pluginのバージョンを上げる
+	//   メンテナンスが停止しているので望み薄
+	//   フォークプロジェクトを作成する（不採用）
+	// ・spring bootプラグインと同じplugins内でロードする
+	//  例： plugins {
+	//	        id 'org.springframework.boot' apply false
+	//	        id 'io.spring.dependency-management' apply false
+	//	        id 'com.github.hierynomus.license-report' apply false
+	//       }
+	//  同一のpluginsでロードすると、spring boot系のプラグインとlicense-reportプラグインで
+	//  spring-coreを同時にロードすることになる。
+	//  結果としてgradleはより高いバージョンのspring-coreを選択する事で結果オーライとなる。
+	//  解決策としてはこちらがシンプルではあるが、弊害としてこの問題の存在をもみ消してしまう
+	//
+	// ============================================================
+	implementation 'gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.16.1'
+	constraints {
+		// バージョンの差し替え（3.0→4.1）4.1は2022/9/1時点での最新
+		implementation 'com.mycila:license-maven-plugin:4.1'
+	}
+}

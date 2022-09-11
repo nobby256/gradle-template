@@ -1,0 +1,66 @@
+import internal.PropertyUtil
+
+plugins {
+	id 'java'
+	id 'jacoco'
+	id 'checkstyle'
+	id 'com.github.spotbugs'
+}
+
+sourceCompatibility = '11'
+
+java {
+	withSourcesJar()
+	withJavadocJar()
+}
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+	options.source = sourceCompatibility
+	options.locale = 'ja_JP'
+	options.encoding = 'UTF-8'
+}
+
+test {
+	useJUnitPlatform()
+
+	ignoreFailures = true
+	finalizedBy 'jacocoTestReport'
+
+	reports {
+		// htmlの出力は不要（ローカルはeclipse、CIはcodebuild/jenkinsで確認）
+		html.required = false
+		junitXml {
+			outputPerTestCase = true
+			// mergeReturns = true
+		}
+	}
+}
+
+jacocoTestReport {
+	dependsOn 'test'
+	reports {
+		// htmlの出力は不要（ローカルはeclipse、CIはcodebuild/jenkinsで確認）
+		html.required = false
+		xml.required = true
+	}
+}
+
+checkstyle {
+	// eclipse 2022-06 (4.24.0)と同じバージョンに固定します
+	toolVersion = '10.0'
+	ignoreFailures = true
+	checkstyleTest.enabled = false
+}
+
+spotbugs {
+	// eclipse 2022-06 (4.24.0)と同じバージョンに固定します
+	toolVersion = '4.7.0'
+	ignoreFailures = true
+	spotbugsTest.enabled = false
+	showProgress = false
+	excludeFilter = file("${PropertyUtil.configDir(project)}/spotbugs/exclude_filter.xml")
+}

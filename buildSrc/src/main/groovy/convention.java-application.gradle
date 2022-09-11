@@ -1,0 +1,34 @@
+plugins {
+	id 'convention.java'
+
+	id 'application'
+	id 'com.github.hierynomus.license-report'
+}
+
+downloadLicenses {
+	includeProjectDependencies = true
+	dependencyConfiguration = 'runtimeClasspath'
+}
+project.tasks.named('assemble') {
+	dependsOn 'downloadLicenses'
+}
+
+distributions {
+	main {
+		addLicense contents
+	}
+}
+
+// spring bootプラグインの適用後に実施
+pluginManager.withPlugin('org.springframework.boot') {
+	project.distributions.named('boot') {
+		addLicense contents
+	}
+}
+
+// distributionにdownloadLicensesタスクの出力を追加する
+def addLicense(CopySpec spec) {
+	spec.into('license') {
+		from(project.tasks.downloadLicenses)
+	}
+}
