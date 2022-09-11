@@ -1,4 +1,6 @@
 import internal.PropertyUtil
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JvmVendorSpec
 
 plugins {
 	id 'java'
@@ -7,9 +9,15 @@ plugins {
 	id 'com.github.spotbugs'
 }
 
-sourceCompatibility = '11'
-
 java {
+	toolchain {
+		languageVersion = PropertyUtil.jvmVersion(project)
+		def jvmVendor = PropertyUtil.jvmVendor(project)
+		if (jvmVendor != null) {
+			vendor = jvmVendor
+		}
+	}
+
 	withSourcesJar()
 	withJavadocJar()
 }
@@ -19,7 +27,6 @@ tasks.withType(JavaCompile) {
 }
 
 tasks.withType(Javadoc) {
-	options.source = sourceCompatibility
 	options.locale = 'ja_JP'
 	options.encoding = 'UTF-8'
 }

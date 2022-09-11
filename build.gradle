@@ -1,7 +1,7 @@
 apply from: "${rootDir}/convention/multi-root.gradle"
 
-group = 'com.example'
-version = '0.0.1'
+group = project.property('productGroup')
+version = project.property('productVersion')
 
 subprojects {
 	group = rootProject.group

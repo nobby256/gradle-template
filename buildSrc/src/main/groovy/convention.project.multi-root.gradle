@@ -12,7 +12,6 @@ dependencyCheck {
 	scanConfigurations = ['runtimeClasspath']
 	outputDirectory = file("${buildDir}/reports/owasp") // レポート出力フォルダ
 
-	def configDir = rootProject.ext.configDir
 	// 誤検出を抑制（https://jeremylong.github.io/DependencyCheck/general/suppression.html）
 	suppressionFile = "${PropertyUtil.configDir(project)}/owasp/dependency-check-suppressions.xml"
 	// 誤陽性を抑制（https://jeremylong.github.io/DependencyCheck/general/hints.html）
