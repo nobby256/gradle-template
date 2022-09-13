@@ -59,8 +59,4 @@ class PropertyUtil {
 		return vendor
 	}
 
-	static String springBootVersion(Project project) {
-		return project.hasProperty(KEY_SPRING_BOOT_VERSION)
-	}
-
 }

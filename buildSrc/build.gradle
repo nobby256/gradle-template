@@ -1,5 +1,4 @@
 plugins {
-	id 'java-gradle-plugin'
 	id 'groovy-gradle-plugin'
 }
 
@@ -45,7 +44,7 @@ dependencies {
 		implementation 'com.mycila:license-maven-plugin:4.1'
 	}
 }
-
+/*
 gradlePlugin {
 	plugins {
 		bootApplicationPlugin {
@@ -57,11 +56,5 @@ gradlePlugin {
 			implementationClass = 'plugin.SpringBootLibraryPlugin'
 		}
 	}
-}
-/*
-eclipse.classpath.file.whenMerged {
-	def jreEntry = entries.find { it.path.contains("org.eclipse.jdt.launching.JRE_CONTAINER") }
-	jreEntry.entryAttributes['module'] = 'true'
-	jreEntry.entryAttributes['limit-modules'] = 'java.base'
 }
 */

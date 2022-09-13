@@ -2,7 +2,6 @@
 // 全プロジェクトで利用するプラグインバージョン
 // https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_management
 // ============================================================
-/*
 pluginManagement {
 	repositories {
 		gradlePluginPortal()
@@ -13,18 +12,9 @@ pluginManagement {
 	}
 }
 plugins {
+	// SpringBoot系のプラグインはこの段階ではロードだけに留める事（apply false）
 	id 'org.springframework.boot' apply false
 	id 'io.spring.dependency-management' apply false
-}
-*/
-buildscript {
-	repositories {
-		gradlePluginPortal()
-	}
-	dependencies {
-		classpath "org.springframework.boot:spring-boot-gradle-plugin:2.7.3"
-		classpath "io.spring.gradle:dependency-management-plugin:1.0.13.RELEASE"
-	}
 }
 
 	
@@ -46,5 +36,8 @@ dependencyResolutionManagement {
 // ============================================================
 rootProject.name = 'gradle-template'
 
-include 'subapp'
-include 'sublibrary'
+include 'sub-java-app'
+include 'sub-java-lib'
+include 'sub-java-util'
+include 'sub-boot-app'
+include 'sub-boot-lib'

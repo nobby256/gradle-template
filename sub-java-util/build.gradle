@@ -1,0 +1,8 @@
+plugins {
+	id 'convention.java'
+}
+
+dependencies {
+    implementation 'joda-time:joda-time:2.11.1'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
+}

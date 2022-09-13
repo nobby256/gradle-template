@@ -1,12 +1,11 @@
-//import internal.SpringBootPluginUtil
+import internal.SpringBootPluginUtil
 
 plugins {
 	id 'convention.java-application'
-	id 'plugin.SpringBootApplicationPlugin'
 }
 
-//SpringBootPluginUtil.loadSpringBootPlugin(project, true)
-//SpringBootPluginUtil.applyDependencyManagement(project)
+SpringBootPluginUtil.applySpringBoot(project)
+SpringBootPluginUtil.applyDependencyManagement(project)
 
 // 下記はLombokを使用する場合にSpring Initializerが出力するconfiguration設定です。
 // Lombokを使用しないプロジェクトであっても特に問題はありません。

@@ -1,9 +1,10 @@
 package com.example.lib;
 
-//@SpringBootTest
+import org.junit.jupiter.api.Test;
+
 class ExampleLibraryTests {
 
-//	@Test
+	@Test
 	void contextLoads() {
 	}
 

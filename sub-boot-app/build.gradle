@@ -1,6 +1,5 @@
 plugins {
-	id 'convention.boot-library'
-//	id 'plugin.SpringBootLibraryPlugin'
+	id 'convention.boot-application'
 }
 
 dependencies {
