@@ -9,7 +9,8 @@ class PropertyUtil {
 	static final String KEY_DEPLOYMENT_REPOSITORY = 'deploymentRepository'
 	static final String KEY_JVM_VERSION = 'jvmVersion'
 	static final String KEY_JVM_VENDOR = 'jvmVendor'
-
+	static final String KEY_SPRING_BOOT_VERSION = 'springBootVersion'
+	
 	static final String DEFAULT_CONFIG_DIR = 'config'
 	static final String DEFAULT_JVM_VERSION = '11'
 	static final String DEFAULT_JVM_VENDOR = 'any'
@@ -56,6 +57,10 @@ class PropertyUtil {
 //			throw new MissingPropertyException("${KEY_JVM_VENDOR}が見つからないか、型がStringもしくはorg.gradle.jvm.toolchain.JvmVendorSpecではありません", KEY_JVM_VERSION, this.class)
 //		}
 		return vendor
+	}
+
+	static String springBootVersion(Project project) {
+		return project.hasProperty(KEY_SPRING_BOOT_VERSION)
 	}
 
 }

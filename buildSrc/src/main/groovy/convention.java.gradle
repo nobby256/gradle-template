@@ -12,7 +12,7 @@ plugins {
 java {
 	toolchain {
 		languageVersion = PropertyUtil.jvmVersion(project)
-		def jvmVendor = PropertyUtil.jvmVendor(project)
+		JvmVendorSpec jvmVendor = PropertyUtil.jvmVendor(project)
 		if (jvmVendor != null) {
 			vendor = jvmVendor
 		}

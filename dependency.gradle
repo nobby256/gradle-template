@@ -1,0 +1,18 @@
+// ============================================================
+// 依存関係ライブラリのバージョン設定
+// https://docs.spring.io/dependency-management-plugin/docs/current-SNAPSHOT/reference/html/
+// ============================================================
+dependencyManagement {
+	// implementation 等でバージョンを指定してもmavenBomの指定をオーバーライド出来なくします
+	overriddenByDependencies = false
+
+	imports {
+		mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+		mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2021.0.4'
+	}
+	dependencies {
+		// spring boot 2.7.3   1.30 → 1.31
+		// https://nvd.nist.gov/vuln/detail/CVE-2022-25857
+		dependency 'org.yaml:snakeyaml:1.31'
+	}
+}

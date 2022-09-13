@@ -1,8 +1,0 @@
-// ============================================================
-// Javaライブラリの規約プラグイン
-//
-// build.gradleの先頭に下記を記載してください。
-//
-//   apply from: "${rootDir}/convention/java-library.gradle
-// ============================================================
-apply plugin: 'convention.java-library'

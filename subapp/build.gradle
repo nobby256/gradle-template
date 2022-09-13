@@ -1,4 +1,7 @@
-apply from: "${rootDir}/convention/boot-application.gradle"
+plugins {
+	id 'convention.boot-application'
+//	id 'plugin.SpringBootApplicationPlugin'
+}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'

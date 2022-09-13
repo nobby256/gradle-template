@@ -1,9 +1,20 @@
-apply from: "${rootDir}/convention/multi-root.gradle"
+plugins {
+	id 'convention.multi-root'
+}
 
 group = project.property('productGroup')
 version = project.property('productVersion')
+
+ext {
+	// publishを行うライブラリプロジェックとの公開先
+	// URLもしくはローカルフォルダを指定してください。
+	// プロパティをコメントアウト、もしくはnullを設定した場合はpublishは行われません。
+	deploymentRepository = layout.buildDirectory.dir('deployment')
+}
 
 subprojects {
 	group = rootProject.group
 	version = rootProject.version
 }
+
+task hello

@@ -1,29 +1,33 @@
 // ============================================================
 // 全プロジェクトで利用するプラグインバージョン
-//
-// Gradleがスクリプトプラグインでのplugins{}をサポートするまで
-// Spring Boot関連のプラグインはbuildscript{}で対応します。
-//
 // https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_management
 // ============================================================
+/*
 pluginManagement {
 	repositories {
 		gradlePluginPortal()
 	}
 	plugins {
-
+		id 'org.springframework.boot' version '2.7.3' 
+		id 'io.spring.dependency-management' version '1.0.13.RELEASE'
 	}
 }
+plugins {
+	id 'org.springframework.boot' apply false
+	id 'io.spring.dependency-management' apply false
+}
+*/
 buildscript {
 	repositories {
 		gradlePluginPortal()
 	}
 	dependencies {
-		classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:2.7.3"
 		classpath "io.spring.gradle:dependency-management-plugin:1.0.13.RELEASE"
 	}
 }
 
+	
 // ============================================================
 // 全プロジェクトで有効となるリポジトリの指定
 // ただしプラグインのリポジトリは対象外です
